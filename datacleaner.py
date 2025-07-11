@@ -22,7 +22,17 @@ def cleaning_data(data):
 
 
 def summarize_data(data):
-    return data
+    summary = {
+        'total_trips': len(data),
+        'average_fare': data['fare_amount'].mean(),
+        'max_fare': data['fare_amount'].max(),
+        'average_trip_distance': data['trip_distance'].mean(),
+        'total_trip_distance': data['trip_distance'].sum(),
+        'payment_type_counts': data['payment_type'].value_counts().to_dict(),
+        'average_trip_duration_minutes': (
+                    (data['dropoff_datetime'] - data['pickup_datetime']).dt.total_seconds() / 60).mean()
+    }
+    return summary
 
 
 def main():
@@ -30,15 +40,11 @@ def main():
     data = read_data_from_path(input_path=path)
     cleaned_data = cleaning_data(data)
     final_data = summarize_data(cleaned_data)
-    print(final_data)
+    for key, value in final_data.items():
+        new_format_key = str(key).replace('_', ' ')
+        new_format_value = float(f"{value:2f}") if isinstance(value, float) else value
+        print(f"{new_format_key}: {new_format_value}")
 
 
-# in_path = "nyc_taxi_sample_100.json"
-# datas = read_data_from_path(input_path=in_path)
-# clean = cleaning_data(datas)
-# dff = clean.iterrows()
-# for index, row in dff:
-#     print(row['pickup_datetime'])
-#     print(type(row['pickup_datetime']))
-#
-
+if __name__ == "__main__":
+    main()
